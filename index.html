@@ -85,12 +85,15 @@
 
     <div class="steps">
       <ol>
-        <li>Plug the knob into USB</li>
+        <li>Hold the <strong>BOOT</strong> button (use a needle), plug the knob into USB, then release</li>
         <li>
-          Open this page in <strong>Chrome or Edge</strong>, then click the button below to connect and install
-          <div class="flash-step">
-            <p>⚠️ The button only appears in Chrome or Edge — not Safari or Firefox</p>
-            <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+          <strong>Chrome or Edge only</strong> — click to flash the firmware
+          <div style="margin-top:.8rem;">
+            <esp-web-install-button manifest="manifest.json" id="ewt" style="display:none"></esp-web-install-button>
+            <button onclick="document.getElementById('ewt').shadowRoot.querySelector('button').click()"
+              style="background:#e8c87a;color:#111;border:none;border-radius:8px;padding:.8rem 2rem;font-size:1rem;font-weight:600;cursor:pointer;">
+              Connect &amp; Install
+            </button>
           </div>
         </li>
         <li>Wait for flashing to complete</li>
