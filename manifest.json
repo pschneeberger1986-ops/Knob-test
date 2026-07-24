@@ -1,0 +1,17 @@
+{
+  "name": "LM Knob",
+  "version": "1.0.0",
+  "home_assistant_domain": null,
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        { "path": "bootloader.bin",       "offset": 0 },
+        { "path": "partition-table.bin",  "offset": 32768 },
+        { "path": "ota_data_initial.bin", "offset": 61440 },
+        { "path": "lm-knob.bin",          "offset": 131072 }
+      ]
+    }
+  ]
+}
