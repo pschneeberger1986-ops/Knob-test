@@ -47,18 +47,24 @@
     }
     esp-web-install-button::part(button):hover { opacity: .85; }
     .steps {
-      margin-top: 2rem;
       text-align: left;
       font-size: .88rem;
       color: #aaa;
       line-height: 1.7;
     }
     .steps ol { padding-left: 1.4rem; }
-    .steps li { margin-bottom: .3rem; }
-    .note {
-      margin-top: 1.5rem;
+    .steps li { margin-bottom: .6rem; }
+    .flash-step {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #222;
+      border-radius: 10px;
+      border: 1px solid #333;
+    }
+    .flash-step p {
       font-size: .8rem;
-      color: #555;
+      color: #666;
+      margin-bottom: .6rem;
     }
     a { color: #e8c87a; text-decoration: none; }
   </style>
@@ -68,9 +74,8 @@
     <div class="icon">☕</div>
     <h1>LM Knob</h1>
     <p class="subtitle">Cloud controller firmware for La Marzocco Linea Micra / Mini</p>
-    <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
 
-    <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid #2a2a2a;">
+    <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #2a2a2a;">
       <p style="font-size:.8rem;color:#aaa;margin-bottom:.8rem;">If this made your morning coffee ritual a little better, a coffee is always appreciated ☕</p>
       <a href="https://www.buymeacoffee.com/schneeberger" target="_blank"
          style="display:inline-flex;align-items:center;gap:.5rem;background:#FFDD00;color:#000;font-weight:700;font-size:.95rem;padding:.55rem 1.2rem;border-radius:8px;text-decoration:none;">
@@ -78,20 +83,23 @@
       </a>
     </div>
 
-    <p style="font-size:.8rem;color:#666;margin-top:1.5rem;">⚠️ The Install button only appears in <strong style="color:#aaa;">Chrome or Edge</strong> — it will not show in Safari or Firefox.</p>
-
     <div class="steps">
       <ol>
         <li>Plug the knob into USB</li>
-        <li>Click <strong>Install</strong> above</li>
-        <li>Select the serial port in the popup</li>
+        <li>
+          Open this page in <strong>Chrome or Edge</strong>, then click the button below to connect and install
+          <div class="flash-step">
+            <p>⚠️ The button only appears in Chrome or Edge — not Safari or Firefox</p>
+            <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+          </div>
+        </li>
         <li>Wait for flashing to complete</li>
         <li>On first boot, the knob displays a QR code — scan it to connect to <strong>LM-Knob-Setup</strong>. A setup page will open automatically on your phone</li>
         <li>Enter your <a href="https://home.lamarzocco.com/" target="_blank">La Marzocco account</a> credentials and your machine's serial number — a La Marzocco account is required</li>
       </ol>
     </div>
 
-    <p style="font-size:.8rem;color:#666;margin-top:.5rem;">Compatible hardware: Guition JC3636K718C (ESP32-S3, 360×360 round display + knob)</p>
+    <p style="font-size:.8rem;color:#666;margin-top:1.2rem;">Compatible hardware: Guition JC3636K718C (ESP32-S3, 360×360 round display + knob)</p>
 
     <p style="font-size:.72rem;color:#3a3a3a;margin-top:1.2rem;line-height:1.5;">
       This firmware is provided as-is, without any warranty. Flashing third-party firmware may void your device warranty. Use at your own risk. This project is not affiliated with or endorsed by La Marzocco.
