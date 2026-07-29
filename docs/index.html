@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LM Knob – Flash</title>
+  <script
+    type="module"
+    src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+  ></script>
+  <style>
+    :root {
+      --gold:  #e8c87a;
+      --bg:    #0f0f0f;
+      --card:  #1a1a1a;
+      --text:  #e0e0e0;
+      --muted: #888;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      gap: 2rem;
+    }
+
+    header { text-align: center; }
+    header h1 { font-size: 2.2rem; color: var(--gold); letter-spacing: .04em; }
+    header p  { color: var(--muted); margin-top: .5rem; font-size: .95rem; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .card h2 { font-size: 1.1rem; color: var(--gold); margin-bottom: 1rem; }
+
+    .steps { list-style: none; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      padding: .55rem 0 .55rem 2.5rem;
+      position: relative;
+      color: var(--text);
+      font-size: .95rem;
+      border-bottom: 1px solid #222;
+    }
+    .steps li:last-child { border-bottom: none; }
+    .steps li::before {
+      content: counter(step);
+      position: absolute; left: 0; top: .5rem;
+      width: 1.6rem; height: 1.6rem;
+      background: var(--gold);
+      color: #111;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .8rem;
+    }
+
+    .flash-zone {
+      text-align: center;
+      padding: 1rem 0;
+    }
+    esp-web-install-button {
+      --esp-tools-button-color:           var(--gold);
+      --esp-tools-button-text-color:      #111;
+      --esp-tools-button-border-radius:   10px;
+      --esp-tools-button-height:          3rem;
+      --esp-tools-button-font-size:       1rem;
+    }
+    .note {
+      color: var(--muted);
+      font-size: .8rem;
+      margin-top: .75rem;
+      line-height: 1.5;
+    }
+
+    .compat {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: .5rem;
+    }
+    .chip {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: .3rem .8rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+    .chip.ok { border-color: #3a3; color: #7c7; }
+
+    footer {
+      color: var(--muted);
+      font-size: .8rem;
+      text-align: center;
+    }
+    footer a { color: var(--gold); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>☕ LM Knob</h1>
+  <p>Standalone La Marzocco controller for the Guition JC3636K718C</p>
+</header>
+
+<div class="card">
+  <h2>Compatible hardware</h2>
+  <div class="compat">
+    <span class="chip ok">Guition JC3636K718C</span>
+    <span class="chip ok">Linea Micra</span>
+    <span class="chip ok">Linea Mini</span>
+    <span class="chip ok">GS3</span>
+  </div>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:.8rem;">
+    No Home Assistant required · No cloud required after first pairing ·
+    Bluetooth local control only
+  </p>
+</div>
+
+<div class="card">
+  <h2>How to flash</h2>
+  <ol class="steps">
+    <li>Connect your Guition board to your PC via USB.</li>
+    <li>Click <strong>Flash firmware</strong> below
+        (Chrome or Edge required — Web Serial API).</li>
+    <li>Select the correct COM/serial port when prompted.</li>
+    <li>Wait ~60 s for the firmware to install.</li>
+    <li>The device reboots and shows the setup screen.</li>
+  </ol>
+
+  <div class="flash-zone">
+    <esp-web-install-button manifest="manifest.json">
+      <button slot="activate">⚡ Flash firmware</button>
+    </esp-web-install-button>
+    <p class="note">
+      Requires Chrome or Edge 89+.<br>
+      On Linux, add your user to the <code>dialout</code> group.
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <h2>After flashing – pairing your machine</h2>
+  <ol class="steps">
+    <li>The knob displays a setup screen on first boot.</li>
+    <li>Put your La Marzocco in <strong>pairing mode</strong>
+        (hold the button until the LED blinks blue).</li>
+    <li><strong>Press the knob</strong> — the device scans and pairs
+        automatically. The BLE token is stored on the device.</li>
+    <li>Done! The knob shows live temperature and status.</li>
+  </ol>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:.8rem;">
+    Wi-Fi is optional (used only for OTA firmware updates).
+    If you connect to the <strong>LM-Knob-Setup</strong> Wi-Fi AP after
+    flashing, you can enter your network credentials via a browser at
+    <code>192.168.4.1</code>.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Controls</h2>
+  <ol class="steps">
+    <li><strong>Short press</strong> — toggle machine on / standby</li>
+    <li><strong>Long press</strong> — open settings
+        (coffee temp, steam level)</li>
+    <li><strong>Rotate</strong> (in settings) — adjust value</li>
+    <li><strong>Press</strong> (in settings) — confirm &amp; next</li>
+  </ol>
+</div>
+
+<footer>
+  <a href="https://github.com/YOUR_HANDLE/lm-knob">GitHub</a> ·
+  Not affiliated with La Marzocco ·
+  MIT licence
+</footer>
+
+</body>
+</html>
