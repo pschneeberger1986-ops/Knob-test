@@ -1,0 +1,68 @@
+name: Build firmware
+
+on:
+  push:
+    branches: [ main ]
+    tags:     [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ── ESP-IDF environment ──────────────────────────────────────────────
+      - name: Set up ESP-IDF
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.2.1
+          target: esp32s3
+
+      # ── Build ────────────────────────────────────────────────────────────
+      - name: Build firmware
+        run: |
+          idf.py build
+        env:
+          IDF_TARGET: esp32s3
+
+      # ── Collect artefacts ────────────────────────────────────────────────
+      - name: Gather binaries
+        run: |
+          mkdir -p release
+          cp build/lm-knob.bin                        release/
+          cp build/bootloader/bootloader.bin          release/
+          cp build/partition_table/partition-table.bin release/
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lm-knob-firmware
+          path: release/
+
+      # ── On tagged release: publish to GitHub Releases + update Pages ─────
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+
+      - name: Copy binaries to docs/ (for ESP Web Tools)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          cp release/bootloader.bin       docs/
+          cp release/partition-table.bin  docs/
+          cp release/lm-knob.bin         docs/
+
+      - name: Deploy GitHub Pages
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          force_orphan: true
