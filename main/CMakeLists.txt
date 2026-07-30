@@ -35,6 +35,5 @@ idf_component_register(
         esp_timer
         driver
         lvgl
-        esp_lcd_gc9a01
         lwip
 )
