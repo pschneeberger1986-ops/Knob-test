@@ -9,7 +9,7 @@
 //   4. Start cloud client (auth + poll every 5 s)
 //   5. UI stays on home screen; state updates arrive via callback
 //
-// No BLE. No Home Assistant. Everything via La Marzocco cloud API.
+// No BLE. Everything via La Marzocco cloud API.
 // =============================================================================
 
 #include "storage.h"
