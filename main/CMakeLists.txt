@@ -15,6 +15,7 @@ idf_component_register(
         "ui/fonts/lv_font_roboto_30.c"
         "ui/fonts/lv_font_roboto_42.c"
         "ui/fonts/lv_font_roboto_56.c"
+        "ui/fonts/lv_img_logo.c"
     INCLUDE_DIRS
         "."
         "cloud"
