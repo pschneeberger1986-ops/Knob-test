@@ -83,23 +83,23 @@ static void send_cmd(uint8_t reg, const uint8_t *data, size_t len)
 
 static void send_pixels(const void *data, size_t len)
 {
-    // Acquire the bus so CS stays low across the entire frame transfer
     spi_device_acquire_bus(s_spi, portMAX_DELAY);
-
     spi_transaction_ext_t t = {
         .command_bits = 8,
         .address_bits = 24,
+        .dummy_bits   = 0,
         .base = {
             .cmd       = 0x32,        // quad write opcode
             .addr      = 0x2C << 8,   // RAMWR address in middle byte
             .tx_buffer = data,
             .length    = len * 8,
             .flags     = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR
-                       | SPI_TRANS_MODE_QIO,      // data on 4 lines, cmd+addr on 1 line (1-1-4)
+                       | SPI_TRANS_VARIABLE_DUMMY
+                       | SPI_TRANS_MULTILINE_CMD | SPI_TRANS_MULTILINE_ADDR
+                       | SPI_TRANS_MODE_QIO,      // full 4-4-4 quad mode
         },
     };
     ESP_ERROR_CHECK(spi_device_polling_transmit(s_spi, (spi_transaction_t *)&t));
-
     spi_device_release_bus(s_spi);
 }
 
@@ -339,9 +339,15 @@ static void lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area,
 
     set_addr_window(x1, y1, x2, y2);
 
-    size_t len = (x2 - x1 + 1) * (y2 - y1 + 1) * sizeof(uint16_t);
-    send_pixels(color_map, len);
+    // LVGL stores RGB565 little-endian; ST77916 expects big-endian.
+    // Byte-swap each pixel in-place (safe: LVGL won't reuse buf until flush_ready).
+    size_t n = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
+    uint16_t *p = (uint16_t *)color_map;
+    for (size_t i = 0; i < n; i++) {
+        p[i] = (uint16_t)((p[i] >> 8) | (p[i] << 8));
+    }
 
+    send_pixels(color_map, n * sizeof(uint16_t));
     lv_disp_flush_ready(drv);
 }
 
@@ -443,11 +449,11 @@ void ui_init(void)
     spi_device_interface_config_t devcfg = {
         .command_bits   = 0,  // overridden per-transaction
         .address_bits   = 0,  // overridden per-transaction
-        .clock_speed_hz = 80 * 1000 * 1000,
+        .clock_speed_hz = 40 * 1000 * 1000,
         .mode           = 0,
         .spics_io_num   = LCD_CS,
         .queue_size     = 4,
-        .flags          = SPI_DEVICE_HALFDUPLEX,
+        .flags          = SPI_DEVICE_HALFDUPLEX | SPI_DEVICE_NO_DUMMY,
     };
     ESP_ERROR_CHECK(spi_bus_add_device(LCD_HOST, &devcfg, &s_spi));
 
