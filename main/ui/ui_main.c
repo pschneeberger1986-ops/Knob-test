@@ -95,8 +95,7 @@ static void send_pixels(const void *data, size_t len)
             .tx_buffer = data,
             .length    = len * 8,
             .flags     = SPI_TRANS_VARIABLE_CMD | SPI_TRANS_VARIABLE_ADDR
-                       | SPI_TRANS_MULTILINE_CMD | SPI_TRANS_MULTILINE_ADDR
-                       | SPI_TRANS_MODE_QIO,      // all phases on 4 lines
+                       | SPI_TRANS_MODE_QIO,      // data on 4 lines, cmd+addr on 1 line (1-1-4)
         },
     };
     ESP_ERROR_CHECK(spi_device_polling_transmit(s_spi, (spi_transaction_t *)&t));
