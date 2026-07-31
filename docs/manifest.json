@@ -1,6 +1,6 @@
 {
   "name": "LM Knob",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "new_install_prompt_erase": true,
   "builds": [
     {
