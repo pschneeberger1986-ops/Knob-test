@@ -52,7 +52,7 @@ static const char *TAG = "ui";
 #define KNOB_B_GPIO     2
 
 #define LVGL_TICK_PERIOD_MS  2
-#define LVGL_DRAW_BUF_LINES  40
+#define LVGL_DRAW_BUF_LINES  10   // keep DMA transfers small (~7KB)
 
 // ─── Globals ──────────────────────────────────────────────────────────────────
 static SemaphoreHandle_t   s_lvgl_mux;
@@ -331,17 +331,27 @@ static void set_addr_window(int x1, int y1, int x2, int y2)
 
 // ─── LVGL flush callback ──────────────────────────────────────────────────────
 
+static int s_flush_count = 0;
+
 static void lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area,
                            lv_color_t *color_map)
 {
     int x1 = area->x1, y1 = area->y1;
     int x2 = area->x2, y2 = area->y2;
 
+    size_t n = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
+
+    if (s_flush_count < 5) {
+        uint16_t *p = (uint16_t *)color_map;
+        ESP_LOGI(TAG, "flush#%d (%d,%d)-(%d,%d) n=%u first_px=0x%04X",
+                 s_flush_count, x1, y1, x2, y2, (unsigned)n, p[0]);
+    }
+    s_flush_count++;
+
     set_addr_window(x1, y1, x2, y2);
 
     // LVGL stores RGB565 little-endian; ST77916 expects big-endian.
     // Byte-swap each pixel in-place (safe: LVGL won't reuse buf until flush_ready).
-    size_t n = (size_t)(x2 - x1 + 1) * (size_t)(y2 - y1 + 1);
     uint16_t *p = (uint16_t *)color_map;
     for (size_t i = 0; i < n; i++) {
         p[i] = (uint16_t)((p[i] >> 8) | (p[i] << 8));
